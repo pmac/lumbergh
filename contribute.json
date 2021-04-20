@@ -1,29 +1,26 @@
 {
     "name": "Mozilla Careers",
-    "description": "Lumbergh is the Mozilla careers website. It is a sugardough-based site that displays open jobs.",
+    "description": "Lumbergh is the Mozilla careers website.",
     "repository": {
-        "url": "https://github.com/mozilla/lumbergh",
+        "url": "https://github.com/mozmeao/lumbergh",
         "license": "MPL 2.0"
     },
     "participate": {
-        "home": "https://github.com/mozilla/lumbergh",
-        "docs": "https://github.com/mozilla/lumbergh#setup",
-        "irc": "irc://irc.mozilla.org/#careersweb",
-        "irc-contacts": ["bensternthal", "giorgos"]
+        "home": "https://github.com/mozmeao/lumbergh",
+        "docs": "https://github.com/mozmeao/lumbergh#setup-your-environment-for-development",
+        "irc": "slack:///#websites",
+        "irc-contacts": ["#websites", "giorgos", "pmac"]
     },
     "bugs": {
-        "list": "https://bugzilla.mozilla.org/buglist.cgi?product=Websites&component=careers.mozilla.org&resolution=---",
-        "report": "https://bugzilla.mozilla.org/enter_bug.cgi?product=Websites&component=careers.mozilla.org",
-        "mentored": "https://bugzilla.mozilla.org/buglist.cgi?product=Websites&component=careers.mozilla.org&resolution=---&f1=bug_mentor&list_id=12047338&o1=isnotempty"
+        "list": "https://github.com/mozmeao/lumbergh/issues",
+        "report": "https://github.com/mozmeao/lumbergh/issues/new"
     },
     "urls": {
         "prod": "https://careers.mozilla.org/",
-        "stage": "https://careers.allizom.org/",
-        "dev": "https://careers-dev.allizom.org/"
+        "stage": "https://careers.allizom.org/"
     },
     "keywords": [
         "django",
-        "jquery",
         "python"
     ]
 }

@@ -1,93 +1,120 @@
 {% extends "base.jinja" %}
 
-{% block page_title %}{{ position.title }} &mdash; Mozilla Jobs &mdash; Open Positions{% endblock %}
+{% set meta_title = "Mozilla Careers &mdash; " + position.title + " &mdash; Open Positions" %}
+{% set meta_description = "Mozilla Careers &mdash; " + meta_description|truncate(175, end='…') %}
 
-{% block site_css %}
-  {{ super() }}
-  <link href="{{ static('css/position.css') }}" rel="stylesheet" />
-{% endblock %}
+{% block body_class %}position-page{% endblock %}
 
 {% block content %}
-<section id="job">
-
-    <article id="job-post" class="job-post" data-location-filter="{{ position.location_filter }}">
-      <div class="job-post-head">
-        <div class="contain">
-          <h1 class="job-post-title">{{ position.title }}</h1>
-          <a class="cta job-post-head-apply ga-job-listing-apply"
-             href="{{ position.apply_url }}">
-              Apply for this job
-          </a>
-          <dl class="job-post-details">
-            <dt class="job-post-team-head">Team:</dt>
-            <dd class="job-post-team">{{ position.department }}</dd>
-            <dt class="job-post-location-head">Locations:</dt>
-            <dd class="job-post-location">{{ position.location_list|join(", ") }}</dd>
-          </dl>
-        </div>
+<section class="job-post" id="job-post">
+  <div class="job-row">
+    <div>
+      <div class="job-title">
+        <strong>{{ position.title }}</strong>
       </div>
-
-      <div class="contain">
-        <div class="job-post-description">
-          {# Description is bleached through sync jobs so it will be happy here. #}
-          {{ position.description|safe }}
-        </div>
-        <aside class="job-related">
-          <h2 class="job-related-head">{{ position.department }}: {{ _('Open Positions') }}</h2>
-          <ul class="job-related-list">
-            {% for p in related_positions %}
-              <li>
-                <a href="{{ p.get_absolute_url() }}"
-                   class="ga-job-listing-detail"
-                   title="{{ p.title }}">{{ p.title }}</a>
-              </li>
-            {% endfor %}
-          </ul>
-        </aside>
+      <div class="title-location">
+        at 
+        {% if position.is_mofo %} 
+          Mozilla Foundation
+        {% else %}
+          Mozilla Corporation
+        {% endif %}
       </div>
-    </article>
+      <dl class="mzp-u-list-styled">
+        {% if not position.is_mofo %}
+          <dt class="job-post-team-head">Team:</dt>
+          <dd class="job-post-team">{{ position.department }}</dd>
+        {% endif %}
+        <dt class="job-post-location-head">Locations:</dt>
+        <dd class="job-post-location">{{ position.job_locations }}</dd>
+      </dl>
+    </div>
+    <div class="appy-btn">
+      <a href="{{ position.apply_url }}" class="mzp-c-button">Apply Now</a>
+    </div>
   </div>
-  <a id="job-post-apply" class="cta ga-job-listing-apply" href="{{ position.apply_url }}">Apply for this job</a>
+  <div class="appy-btn-sm apply-sm">
+    <a href="{{ position.apply_url }}" class="mzp-c-button">Apply Now</a>
+  </div>
+  <div>
+    {{ position.description|safe }}
+  </div>
+  <div class="c-apply-button-container">
+    <a href="{{ position.apply_url }}" class="mzp-c-button">Apply for this job</a>
+    <small>
+      <a rel="external" href="https://assets.mozilla.net/pdf/Mozilla_Applicant_Privacy_Notice_May_2018.pdf">Applicant Privacy Notice</a>
+    </small>
+  </div>
 </section>
 
-<section id="why">
-  <div class="contain">
-    <h2 class="why-head">Why Mozilla?</h2>
-    <div class="why-intro">
-      <p>
-        Mozilla is a thriving global community of technologists, thinkers and builders working collaboratively and openly to keep the Internet alive and accessible for all. When you work at Mozilla, you give yourself a chance to make a difference in the lives of Web users everywhere. And you give us a chance to make a difference in your life every day. Join our team today and together we’ll make a better Web for tomorrow.
-      </p>
-    </div>
+<section id="why" class="mzp-c-call-out">
+  <div class="mzp-l-content">
+    <h2 class="mzp-c-call-out-title">Why Mozilla?</h2>
+    <p class="mzp-c-call-out-desc">
+      At Mozilla, we’re serving humanity—by maintaining a safe, open internet—while also
+      helping the individual humans employed here to reach their personal and
+      professional goals. With a relatively small team serving hundreds of millions of
+      people, a culture of exploration, and a commitment to mentorship, opportunities
+      abound to learn and grow at Mozilla.
+    </p>
+  </div>
+</section>
 
-    <div class="why-reasons">
-      <div class="why-reason-box">
-        <h3>We Are Global</h3>
-        <ul>
-          <li>500+ paid staff from over 30 countries</li>
-          <li>Thousands of active contributors across six continents</li>
-          <li>10 global offices: Mountain View, San Francisco, Portland,
-          Vancouver, Toronto, Paris, London, Berlin, Beijing, and Taipei</li>
-          <li>Hundreds of home offices and remote workers around the world</li>
+<br />
+
+<section class="mzp-l-card-third">
+  <div class="mzp-c-card">
+    <div class="mzp-c-card-content">
+      <h3 class="mzp-c-card-title">Our values drive our actions</h3>
+      <div class="mzp-c-card-desc">
+        <ul class="mzp-u-list-styled">
+          <li>
+            Purpose is built into our work, with our mission driving every decision
+          </li>
+          <li>We challenge assumptions, the status quo, ourselves, and each other</li>
+          <li>
+            We are transparent: in our code, our business partnerships, and our everyday
+            interactions
+          </li>
+          <li>
+            We seek out people from diverse backgrounds and with perspectives different
+            from our own
+          </li>
+          <li>We pair purpose with performance and put people ahead of profit</li>
         </ul>
       </div>
-      <div class="why-reason-box">
-        <h3>And so are our benefits...</h3>
-        <ul>
-          <li>Competitive pay</li>
-          <li>Top-notch medical</li>
-          <li>Travel and conference budgets</li>
-          <li>Ability to work using the latest hardware and software of your choice</li>
-          <li>Dozens of technical Lunch and Learns and invited speakers each month</li>
+    </div>
+  </div>
+
+  <div class="mzp-c-card">
+    <div class="mzp-c-card-content">
+      <h3 class="mzp-c-card-title">Our impact is global</h3>
+      <div class="mzp-c-card-desc">
+        <ul class="mzp-u-list-styled">
+          <li>700+ paid staff from over 30 countries</li>
+          <li>Thousands of volunteer contributors across six continents</li>
+          <li>
+            9 global offices: Mountain View, San Francisco, Portland, Vancouver,
+            Toronto, Paris, London, Berlin, and Beijing
+          </li>
+          <li>Hundreds of home offices globally</li>
         </ul>
       </div>
-      <div class="why-reason-box">
-        <h3>Because we love what we do!</h3>
-        <ul>
-          <li>We take bold technical leaps</li>
-          <li>We code and ship in the open</li>
-          <li>We directly impact hundreds of millions of users</li>
-          <li>We build technology for the benefit of the Web’s users and creators</li>
-          <li>We work in a culture defined by principles over profits</li>
+    </div>
+  </div>
+
+  <div class="mzp-c-card">
+    <div class="mzp-c-card-content">
+      <h3 class="mzp-c-card-title">Our benefits are world-class</h3>
+      <div class="mzp-c-card-desc">
+        <ul class="mzp-u-list-styled">
+          <li>Flexible work environment (nearly half of Mozillians work remotely)</li>
+          <li>
+            Industry-leading paid parental leave (up to 26 weeks of fully paid leave for
+            childbearing parents and up to 12 weeks for non-childbearing parents)
+          </li>
+          <li>Reimbursement for professional development (up to $3,000/year)</li>
+          <li>A work setup including the latest hardware and software of your choice</li>
         </ul>
       </div>
     </div>

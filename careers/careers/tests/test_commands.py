@@ -1,8 +1,10 @@
+from datetime import datetime, timezone
+
 from django.core.management import call_command
 from django.test.utils import override_settings
 from django.utils.six import StringIO
 
-from mock import patch
+from unittest.mock import patch
 
 from careers.base.tests import TestCase
 from careers.careers.models import Position
@@ -23,7 +25,7 @@ class SyncGreenhouseTests(TestCase):
                     'title': 'Web Fox',
                     'updated_at': '2016-07-25T14:45:57-04:00',
                     'absolute_url': 'http://example.com/foo',
-                    'content': '&lt;strong&gt;foo&lt;/strong&gt; bar',
+                    'content': '&lt;h2&gt;foo&lt;/h2&gt; bar',
                     "metadata": [
                         {
                             "id": 69450,
@@ -62,12 +64,14 @@ class SyncGreenhouseTests(TestCase):
         position = Position.objects.get()
         self.assertEqual(position.job_id, 'xxx')
         self.assertEqual(position.title, 'Web Fox')
+        self.assertEqual(position.updated_at, datetime(2016, 7, 25, 18, 45, 57,
+                                                       tzinfo=timezone.utc))
         self.assertEqual(position.location_list, ['Greece', 'Portland', 'Remote'])
         self.assertEqual(position.department, 'Engineering')
         self.assertEqual(position.apply_url, 'http://example.com/foo')
         self.assertEqual(position.source, 'gh')
         self.assertEqual(position.position_type, 'Full-time')
-        self.assertEqual(position.description, '<strong>foo</strong> bar')
+        self.assertEqual(position.description, '<h4>foo</h4> bar')
 
     def test_job_removal(self):
         PositionFactory.create(job_id='xxx')
@@ -77,7 +81,8 @@ class SyncGreenhouseTests(TestCase):
                 {
                     'id': 'xxx',
                     'title': 'Web Fox',
-                    'absolute_url': 'http://example.com/foo'
+                    'absolute_url': 'http://example.com/foo',
+                    'updated_at': '2016-07-25T14:45:57-04:00',
                 },
             ]
         }
@@ -96,7 +101,8 @@ class SyncGreenhouseTests(TestCase):
                 {
                     'id': 'xxx',
                     'title': 'Web Fox',
-                    'absolute_url': 'http://example.com/foo'
+                    'absolute_url': 'http://example.com/foo',
+                    'updated_at': '2016-07-25T14:45:57-04:00',
                 },
             ]
         }

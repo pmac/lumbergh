@@ -1,7 +1,6 @@
-{% set navbar_section = navbar_section|default(None) -%}
-
+{% set default_slug = "Mozilla Careers &mdash; Feel good about your work again" %}
 <!DOCTYPE html>
-<html lang="{{ LANG }}" dir="{{ DIR }}" class="js-disabled"
+<html lang="{{ LANG }}" dir="{{ DIR }}" class="no-js"
       data-ga-code="{{ settings.GA_ACCOUNT_CODE }}"
       data-gtm-code="{{ settings.GTM_ACCOUNT_CODE }}">
   <head>
@@ -9,26 +8,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{% block page_title %}mozilla.org{% endblock %}</title>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ meta_title|default(default_slug, true)|safe }}">
+    <meta property="og:description" content="{{ meta_description|default(default_slug, true)|safe }}">
+    <meta property="og:image" content="{{ meta_image|default(static('img/moz-m.png'), true)|safe }}">
+    <meta property="og:image:alt" content="{{ meta_title|default(default_slug, true)|safe }}">
+    <meta name="twitter:title" content="{{ meta_title|default(default_slug, true)|safe }}">
+    <meta name="twitter:description" content="{{ meta_description|default(default_slug, true)|safe }}">
+    <meta name="twitter:image" content="{{ meta_image|default(static('img/moz-m.png'), true)|safe }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="description" content="{{ meta_description|default(default_slug, true)|safe }}">
+    <title>{{ meta_title|default(default_slug, true)|safe }}</title>
 
     {# css #}
     {% block site_css %}
-      <link href="{{ static('css/base.css') }}" rel="stylesheet" />
-      <link href="{{ static('js/libs/video-js/video-js.css') }}" rel="stylesheet" />
-      <link href="{{ static('js/libs/video-js/video-js-sandstone.css') }}" rel="stylesheet" />
+      <link href="{{ static('css/protocol/css/protocol.min.css') }}" rel="stylesheet" />
+      <link href="{{ static('css/protocol/css/protocol-extra.min.css') }}" rel="stylesheet" />
+      <link href="{{ static('css/careers-new.css') }}" rel="stylesheet" />
     {% endblock %}
-    <link href="{{ static('css/print.css') }}" rel="stylesheet" media="print" />
 
     {# js #}
-    <!--[if gt IE 8]> <!-- -->
-      <script src="{{ static('js/head.js') }}"></script>
-    <!-- <![endif]-->
-
-    <!--[if lte IE 8]>
-    {% block site_ie8 %}
-      <script src="{{ static('js/libs/html5shiv-printshiv.js') }}"></script>
-    {% endblock %}
-    <![endif]-->
+    <script src="{{ static('js/dnt-helper.js') }}"></script>
+    <script src="{{ static('js/protocol/protocol-base.min.js') }}"></script>
+    <script src="{{ static('js/protocol/protocol-utils.min.js') }}"></script>
+    <script src="{{ static('js/protocol/protocol-supports.min.js') }}"></script>
 
     {# icons #}
     <link rel="shortcut icon" type="image/png" href="{{ static('img/favicon.ico') }}"/>
@@ -40,50 +43,45 @@
     {% block google_analytics %}
       {# Google Analytics #}
       {% if settings.GTM_ACCOUNT_CODE %}
-        <noscript>
-          <iframe src="//www.googletagmanager.com/ns.html?id={{ settings. GTM_ACCOUNT_CODE }}"
-                  height="0" width="0" style="display:none;visibility:hidden"></iframe>
-        </noscript>
-        <script src="{{ static('js/gtm.js') }}"></script>
+        <script src="{{ static('js/gtm-snippet.js') }}"></script>
       {% elif settings.GA_ACCOUNT_CODE %}
         <script src="{{ static('js/ga.js') }}"></script>
       {% endif %}
     {% endblock %}
 
   </head>
-  <body id="{% block body_id %}{% endblock %}"
+  <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}"
     {%- block body_data %}
     {%- endblock %}>
+    {%- if settings.GTM_ACCOUNT_CODE %}
+      <noscript>
+        <iframe src="//www.googletagmanager.com/ns.html?id={{ settings. GTM_ACCOUNT_CODE }}"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+      </noscript>
+    {%- endif %}
 
     {% include "base/header.jinja" %}
 
-    <div id="wrapper">
+    <div id="wrapper" class="mzp-l-content mzp-t-mozilla">
       <main role="main">
 
         {% block content %}{% endblock %}
 
       </main>
-
-      {% block site_footer %}
-        {% include "base/footer.jinja" %}
-      {% endblock %}
-
     </div><!-- /#wrapper -->
+
+    {% block site_footer %}
+      {% include "base/footer.jinja" %}
+    {% endblock %}
 
     {# js #}
     {% block site_js %}
-      <script src="{{ static('js/libs/jquery-1.7.1.min.js') }}"></script>
-      <script src="{{ static('js/libs/waypoints.min.js') }}"></script>
-      <script src="{{ static('js/libs/modernizr.custom.96716.js') }}"></script>
-      <script src="{{ static('js/libs/jquery.carouFredSel-6.2.1-packed.js') }}"></script>
-      <script src="{{ static('js/libs/jquery.touchSwipe.min.js') }}"></script>
-      <script src="{{ static('js/ga_event-tracking.js') }}"></script>
-
-      <!--[if gt IE 8]> <!-- -->
-        <script src="{{ static('js/libs/video-js/video.dev.js') }}"></script>
-        <script src="{{ static('js/libs/requestAnimationFrame.min.js') }}"></script>
-        <script src="{{ static('js/base.js') }}"></script>
-      <!-- <![endif]-->
+      {% if settings.GA_ACCOUNT_CODE -%}
+        <script src="{{ static('js/ga_event-tracking.js') }}"></script>
+      {% endif %}
+      <script src="{{ static('js/protocol/protocol-navigation.min.js') }}"></script>
+      <script src="{{ static('js/protocol/protocol-menu.min.js') }}"></script>
+      <script src="{{ static('js/base.js') }}"></script>
     {% endblock %}
 
   </body>

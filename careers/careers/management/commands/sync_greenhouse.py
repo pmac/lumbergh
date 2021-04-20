@@ -1,4 +1,6 @@
-import HTMLParser
+# -*- coding: utf-8 -*-
+import html
+import re
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -6,12 +8,29 @@ from django.db import transaction
 
 import bleach
 import requests
-from raven.contrib.django.models import client
+from html5lib.filters.base import Filter
 
 from careers.careers.models import Position
 
 GREENHOUSE_URL = 'https://api.greenhouse.io/v1/boards/{}/jobs/?content=true'
-H = HTMLParser.HTMLParser()
+
+ALLOWED_TAGS = [
+    'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
+    'i', 'li', 'ol', 'ul', 'p', 'br', 'h1', 'h2', 'h3', 'h4',
+    'strong',
+]
+
+
+class HeaderConverterFilter(Filter):
+    def __iter__(self):
+        for token in Filter.__iter__(self):
+            if (token['type'] in ['StartTag', 'EndTag']):
+                if token['name'] in ['h1', 'h2', 'h3']:
+                    token['name'] = 'h4'
+            yield token
+
+
+cleaner = bleach.sanitizer.Cleaner(tags=ALLOWED_TAGS, strip=True, filters=[HeaderConverterFilter])
 
 
 class Command(BaseCommand):
@@ -33,9 +52,6 @@ class Command(BaseCommand):
             # Maybe GH sometimes includes jobs with the same ID multiple times
             # in the json. Capture the event in Sentry and look the other way.
             if job['id'] in job_ids:
-                client.captureMessage(
-                        message='[GH Sync] Job {} twice in the same json'.format(job['id']),
-                        data={'extra': {'jobs': data['jobs']}})
                 continue
 
             job_ids.append(job['id'])
@@ -49,16 +65,23 @@ class Command(BaseCommand):
             else:
                 department = ''
 
+            is_mofo = False
+            if department == 'Mozilla Foundation':
+                is_mofo = True
+
             offices = job.get('offices', '')
             if offices:
                 location = ','.join([office['name'] for office in offices])
             else:
                 location = ''
 
-            description = H.unescape(job.get('content', ''))
-            description = bleach.clean(description,
-                                       tags=bleach.ALLOWED_TAGS + ['p', 'br'],
-                                       strip=True)
+            jobLocations = job.get('location', {}).get('name', '')
+
+            description = html.unescape(job.get('content', ''))
+            description = cleaner.clean(description)
+            # Remove empty paragraphs and h4s and paragraphs with \xa0
+            # (no-brake space). I ♥ regex
+            description = re.sub(r'<(p|h4)>([ ]*|(\xa0)+)</(p|h4)>', '', description)
 
             for metadata in job.get('metadata', []):
                 if metadata.get('name', '') == 'Employment Type':
@@ -70,10 +93,13 @@ class Command(BaseCommand):
             object_data = {
                 'title': job['title'],
                 'department': department,
+                'is_mofo': is_mofo,
                 'location': location,
+                'job_locations': jobLocations,
                 'description': description,
                 'position_type': position_type,
                 'apply_url': job['absolute_url'],
+                'updated_at': job['updated_at'],
             }
 
             changed = False

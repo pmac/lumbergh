@@ -2,7 +2,7 @@
 from datetime import date
 
 from django.contrib.syndication.views import Feed
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import feedgenerator
 
 from careers.careers.models import Position
@@ -34,6 +34,9 @@ class LatestPositionsFeed(Feed):
 
     def item_description(self, item):
         return item.description
+
+    def item_pubdate(self, item):
+        return item.updated_at
 
     def item_categories(self, item):
         categories = []

@@ -1,4 +1,7 @@
+from datetime import datetime
 from itertools import chain
+
+from django.urls import reverse
 
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
@@ -10,10 +13,13 @@ class Position(models.Model):
     title = models.CharField(max_length=100)
     department = models.CharField(max_length=100)
     location = models.CharField(max_length=500)
+    job_locations = models.CharField(max_length=500, default='')
+    is_mofo = models.BooleanField(default=False)
     description = models.TextField()
     apply_url = models.URLField()
     source = models.CharField(max_length=100)
     position_type = models.CharField(max_length=100)
+    updated_at = models.DateTimeField(default=datetime.utcnow)
 
     class Meta:
         ordering = ('department', 'title',)
@@ -25,12 +31,9 @@ class Position(models.Model):
     def location_list(self):
         return sorted(self.location.split(','))
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('careers.position', (), {
-            'source': self.source,
-            'job_id': self.job_id,
-        })
+        return reverse('careers.position',
+                       kwargs={'source': self.source, 'job_id': self.job_id})
 
     @classmethod
     def position_types(cls):

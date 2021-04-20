@@ -2,10 +2,9 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.views.static import serve as servestatic
 
-from base import views
+from .base import views
 
 urlpatterns = [
-    url(r'', include('careers.university.urls')),
     url(r'', include('careers.careers.urls')),
 
     # contribute.json url
@@ -14,11 +13,7 @@ urlpatterns = [
 
     # Generate a robots.txt
     url(r'^robots\.txt$', views.robots, name='robots'),
-
-    # healthz
-    url(r'^healthz/$', views.healthz, name='healthz'),
-
-    # Generate a robots.txt
-    url(r'^csp-violation-capture$', views.csp_violation_capture,
-        name='csp-violation-capture'),
+    url(r'^404\.html$', views.custom_404, name='404'),
 ]
+
+handler404 = 'careers.base.views.custom_404'
